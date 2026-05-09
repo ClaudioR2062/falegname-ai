@@ -1,28 +1,6 @@
 export default async function handler(req, res) {
 
   if (req.method !== "POST") {
-    return res.status(405).end();
-  }
-
-  const { message } = req.body;
-
-  const prompt = `
-Sei un falegname esperto con esperienza reale di cantiere.
-
-Se manca chiarezza fai UNA domanda.
-
-Se è chiaro rispondi così:
-
-PROBLEMA:
-PERCHÉ:
-SOLUZIONE:
-ATTENZIONE:
-SE SBAGLI:
-
-Domanda:
-export default async function handler(req, res) {
-
-  if (req.method !== "POST") {
     return res.status(405).json({
       reply: "Metodo non consentito"
     });
@@ -32,20 +10,14 @@ export default async function handler(req, res) {
 
     const { message } = req.body;
 
-    if (!message) {
-      return res.status(400).json({
-        reply: "Messaggio mancante"
-      });
-    }
-
     const prompt = `
-Sei un falegname esperto con esperienza reale di laboratorio e cantiere.
+Sei un falegname esperto reale.
 
-Rispondi in modo tecnico, pratico e diretto.
+Rispondi in modo tecnico, pratico e sintetico.
 
-Se manca chiarezza fai UNA sola domanda.
+Se serve fai UNA domanda.
 
-Se invece il problema è chiaro rispondi SEMPRE con questa struttura:
+Se il problema è chiaro usa:
 
 PROBLEMA:
 PERCHÉ:
@@ -58,16 +30,22 @@ ${message}
 `;
 
     const response = await fetch(
-      "https://api.openai.com/v1/responses",
+      "https://api.openai.com/v1/chat/completions",
       {
         method: "POST",
         headers: {
-          "Authorization": "Bearer " + process.env.OPENAI_API_KEY,
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
         },
         body: JSON.stringify({
           model: "gpt-4.1-mini",
-          input: prompt
+          messages: [
+            {
+              role: "user",
+              content: prompt
+            }
+          ],
+          temperature: 0.7
         })
       }
     );
@@ -76,20 +54,8 @@ ${message}
 
     console.log(data);
 
-    let output = "Nessuna risposta";
-
-    if (
-      data.output &&
-      data.output[0] &&
-      data.output[0].content &&
-      data.output[0].content[0] &&
-      data.output[0].content[0].text
-    ) {
-      output = data.output[0].content[0].text;
-    }
-
     return res.status(200).json({
-      reply: output
+      reply: data.choices[0].message.content
     });
 
   } catch (error) {
