@@ -1,14 +1,13 @@
-ERRORI COMUNI:
+ERRORI COMUNI
 
 - scegliere tranciati non consecutivi
-- fidarsi del colore senza bagnare il legno
-- usare 6/10 troppo sottili
-- carteggiare troppo
-- non bilanciare il pannello
-- sottovalutare umidità
-- ignorare dilatazioni
-- usare fissaggi non ispezionabili
+- sottovalutare movimenti legno
+- non bilanciare pannelli
 - progettare senza pensare al montaggio
-- fare curve senza verificare ritorni elastici
-- lavorare pannelli grandi senza controllo planarità
+- ignorare manutenzione futura
+- lavorare grandi superfici senza controllo planarità
 - scegliere estetica prima della struttura
+- seguire muri storti invece del laser
+- fare curve senza considerare ritorno elastico
+- bloccare rigidamente materiali che devono muoversi
+- usare materiali incoerenti tra massello e impiallacciato

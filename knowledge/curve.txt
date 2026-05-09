@@ -1,43 +1,30 @@
-PROBLEMA:
-realizzare mobili curvi su pareti non regolari
+LAVORAZIONI CURVE
 
-SOLUZIONE:
-creare dima direttamente in cantiere
+RILIEVO:
+- creare dima fisica
+- linee ogni 10mm
+- riportare quote in CAD
+- creare spline
 
-COME:
-fissare riferimenti 0/0
-tracciare linee parallele ogni 10mm
-misurare progressivamente
-riportare quote in autocad
-creare spline
-
-MATERIALI:
-mdf idro 19mm
-mdf light calibrato
-duglas stagionato da vecchi serramenti
-
-MOTIVO:
-stabilità elevata e ottima resistenza all’umidità
+Definire sempre:
+- punto 0/0
+- assi x/y
 
 ANTE CURVE:
-ottenute laminando più fogli sottili con colla e film estensibile
+realizzate con pannelli sottili incollati progressivamente.
 
-METODO:
-- primo pannello fissato alla struttura
-- pannelli successivi incollati
-- compressione con film estensibile
-- eventuali cinghie a cricchetto
-
-ATTENZIONE:
-lasciare abbondanza per rifilatura finale
+PRESSIONE:
+- film estensibile
+- cinghie
+- supporti interni
 
 CANETTATURE:
-fresa 8mm z3
-canetto 10mm
-doppia passata
+- fresa 8mm
+- canetti 10mm
+- doppia passata
 
 OBIETTIVO:
-lasciare circa 1mm residuo per mantenere flessibilità
+lasciare circa 1mm residuo per flessibilità.
 
-CONTROLLO:
-verificare sempre che il pannello riesca a seguire la curva senza rotture
+ATTENZIONE:
+verificare sempre che il pannello riesca a seguire la curva.

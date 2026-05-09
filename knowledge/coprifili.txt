@@ -1,0 +1,29 @@
+COPRIFILI
+
+Regola:
+se possibile il difetto deve sparire visivamente.
+
+STRATEGIE:
+- taglio inclinato
+- gioco nascosto
+- svuotamento posteriore
+- aumento larghezza coprifilo
+
+LIMITI:
+non svuotare troppo il coprifilo.
+
+Esempio:
+su coprifilo 19mm:
+massimo circa 10mm di svuotamento.
+
+SE IL DIFETTO È TROPPO:
+- tamponamento in legno
+- tamponamento in alluminio
+
+FILOSOFIA:
+meglio coprifili più abbondanti che tornare in cantiere per rifiniture mancanti.
+
+REGOLE:
+anche i pezzi fuori misura devono essere finiti perfettamente.
+
+Mai lasciare pezzi grezzi non protetti.

@@ -1,0 +1,32 @@
+PROBLEMA:
+pannelli più larghi della pressa.
+
+SOLUZIONE:
+realizzare:
+- un pannello a misura
+- un pannello maggiorato
+
+Creare:
+- battuta
+- controbattuta
+
+Poi:
+incollare tutto sopra un nuovo pannello di supporto.
+
+RISULTATO:
+pannello unico senza fughe visibili.
+
+ATTENZIONE:
+- venature consecutive
+- supporto posteriore obbligatorio
+- controllo in controluce
+
+ERRORI:
+- vene non allineate
+- battute deformate
+- pannello non supportato
+
+CONTROLLO:
+pannello verticale in piena luce.
+
+Le curve delle vene devono unirsi nello stesso punto.
