@@ -4,82 +4,68 @@ import path from "path";
 export default async function handler(req, res) {
 
   if (req.method !== "POST") {
-    return res.status(405).json({
-      reply: "Metodo non consentito"
-    });
+    return res.status(405).end();
   }
 
   try {
 
     const { message } = req.body;
 
-    const knowledgePath = path.join(process.cwd(), "knowledge");
+    // DATABASE TECNICO
 
-    const files = fs.readdirSync(knowledgePath);
+    const dbPath = path.join(
+      process.cwd(),
+      "database"
+    );
 
-    let selectedKnowledge = "";
+    const files =
+      fs.readdirSync(dbPath);
 
-    // ricerca semplice per parole
+    let knowledge = "";
+
     for (const file of files) {
 
-      const filePath = path.join(knowledgePath, file);
+      const content = fs.readFileSync(
+        path.join(dbPath, file),
+        "utf8"
+      );
 
-      const content = fs.readFileSync(filePath, "utf8");
+      knowledge += "\n\n" + content;
+    }
 
-      const lowerContent = content.toLowerCase();
-      const lowerMessage = message.toLowerCase();
+    // LOG DOMANDE
 
-      // divide domanda in parole
-      const words = lowerMessage.split(" ");
+    const logPath = path.join(
+      process.cwd(),
+      "logs",
+      "questions.txt"
+    );
 
-      let relevance = 0;
+    const logEntry = `
 
-      for (const word of words) {
+========================
+DATA:
+${new Date().toISOString()}
 
-        if (
-          word.length > 3 &&
-          lowerContent.includes(word)
-        ) {
-          relevance++;
-        }
-      }
-
-      // prende solo file rilevanti
-      if (relevance > 0) {
-
-        selectedKnowledge += `
-FILE: ${file}
-
-${content}
-
--------------------
+DOMANDA:
+${message}
 `;
-      }
-    }
 
-    // fallback se niente trovato
-    if (!selectedKnowledge) {
+    fs.appendFileSync(
+      logPath,
+      logEntry
+    );
 
-      selectedKnowledge =
-        "Nessuna conoscenza specifica trovata.";
-    }
+    // PROMPT
 
     const prompt = `
-Sei Claudio Riva, falegname esperto reale.
+Sei Claudio, falegname esperto reale.
 
-Usa SEMPRE le informazioni presenti nel knowledge base.
-
-Non parlare come AI generica.
-
-Parla:
-- pratico
-- diretto
-- tecnico
-- realistico
+Rispondi usando esperienza pratica reale.
 
 Se manca chiarezza fai UNA domanda.
 
-Se il problema è chiaro rispondi con:
+Se è chiaro rispondi così:
 
 PROBLEMA:
 PERCHÉ:
@@ -87,46 +73,47 @@ SOLUZIONE:
 ATTENZIONE:
 SE SBAGLI:
 
-KNOWLEDGE BASE:
-${selectedKnowledge}
+CONOSCENZA TECNICA:
+${knowledge}
 
 DOMANDA:
 ${message}
 `;
 
     const response = await fetch(
-      "https://api.openai.com/v1/chat/completions",
+      "https://api.openai.com/v1/responses",
       {
         method: "POST",
+
         headers: {
-          "Content-Type": "application/json",
           "Authorization":
-            `Bearer ${process.env.OPENAI_API_KEY}`
+            "Bearer " +
+            process.env.OPENAI_API_KEY,
+
+          "Content-Type":
+            "application/json"
         },
+
         body: JSON.stringify({
-          model: "gpt-4.1-mini",
-          messages: [
-            {
-              role: "user",
-              content: prompt
-            }
-          ],
-          temperature: 0.7
+          model: "gpt-5.3",
+          input: prompt
         })
       }
     );
 
-    const data = await response.json();
+    const data =
+      await response.json();
 
-    return res.status(200).json({
-      reply: data.choices[0].message.content
+    res.status(200).json({
+      reply:
+        data.output[0]
+        .content[0]
+        .text
     });
 
-  } catch (error) {
+  } catch (err) {
 
-    console.error(error);
-
-    return res.status(500).json({
+    res.status(500).json({
       reply: "Errore server"
     });
 
