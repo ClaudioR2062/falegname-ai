@@ -1,96 +1,234 @@
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
-  <meta charset="UTF-8">
+
+  <meta charset="UTF-8" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
   <title>Falegname AI</title>
 
   <style>
+
     body{
-      font-family:Arial;
-      max-width:800px;
+      margin:0;
+      padding:0;
+      background:#f2f2f2;
+      font-family:Arial, sans-serif;
+    }
+
+    .container{
+      max-width:900px;
       margin:40px auto;
+      background:white;
+      border-radius:12px;
       padding:20px;
+      box-shadow:0 0 20px rgba(0,0,0,0.1);
+    }
+
+    h1{
+      margin-top:0;
     }
 
     #chat{
-      border:1px solid #ccc;
       height:500px;
-      overflow:auto;
-      padding:10px;
-      margin-bottom:10px;
+      overflow-y:auto;
+      border:1px solid #ddd;
+      border-radius:10px;
+      padding:15px;
+      background:#fafafa;
+      margin-bottom:15px;
     }
 
     .user{
-      margin:10px 0;
-      color:#222;
+      margin-bottom:15px;
+      text-align:right;
+    }
+
+    .user .bubble{
+      display:inline-block;
+      background:#d9ecff;
+      padding:10px;
+      border-radius:10px;
+      max-width:80%;
     }
 
     .ai{
-      margin:10px 0;
+      margin-bottom:15px;
+      text-align:left;
+    }
+
+    .ai .bubble{
+      display:inline-block;
+      background:#efefef;
+      padding:12px;
+      border-radius:10px;
+      max-width:80%;
       white-space:pre-wrap;
-      background:#f5f5f5;
-      padding:10px;
-      border-radius:8px;
+    }
+
+    .controls{
+      display:flex;
+      gap:10px;
     }
 
     input{
-      width:80%;
-      padding:10px;
+      flex:1;
+      padding:14px;
+      border-radius:10px;
+      border:1px solid #ccc;
+      font-size:16px;
     }
 
     button{
-      padding:10px;
+      padding:14px 20px;
+      border:none;
+      border-radius:10px;
+      cursor:pointer;
+      background:black;
+      color:white;
+      font-size:16px;
     }
+
+    button:hover{
+      opacity:0.9;
+    }
+
+    .loading{
+      opacity:0.6;
+      font-style:italic;
+    }
+
   </style>
+
 </head>
 
 <body>
 
-<h1>Falegname AI</h1>
+  <div class="container">
 
-<div id="chat"></div>
+    <h1>Falegname AI</h1>
 
-<input id="input" placeholder="Scrivi il problema..." />
-<button onclick="send()">Invia</button>
+    <div id="chat"></div>
+
+    <div class="controls">
+
+      <input
+        id="input"
+        placeholder="Scrivi il problema..."
+      />
+
+      <button onclick="send()">
+        Invia
+      </button>
+
+    </div>
+
+  </div>
 
 <script>
+
+const password = prompt("Password accesso");
+
+if(password !== "claudio123"){
+
+  document.body.innerHTML = `
+    <h1 style="text-align:center;margin-top:100px;">
+      Accesso negato
+    </h1>
+  `;
+
+  throw new Error("Accesso negato");
+}
+
 async function send(){
 
   const input = document.getElementById("input");
+
   const chat = document.getElementById("chat");
 
-  const text = input.value;
+  const text = input.value.trim();
 
   if(!text) return;
 
   chat.innerHTML += `
     <div class="user">
-      <b>Tu:</b> ${text}
+      <div class="bubble">
+        ${text}
+      </div>
     </div>
   `;
 
   input.value = "";
 
-  const res = await fetch("/api/chat",{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json"
-    },
-    body:JSON.stringify({
-      message:text
-    })
-  });
-
-  const data = await res.json();
-
   chat.innerHTML += `
-    <div class="ai">
-      ${data.reply}
+    <div class="ai loading" id="loading">
+      <div class="bubble">
+        Sto ragionando...
+      </div>
     </div>
   `;
 
   chat.scrollTop = chat.scrollHeight;
+
+  try{
+
+    const res = await fetch("/api/chat",{
+
+      method:"POST",
+
+      headers:{
+        "Content-Type":"application/json"
+      },
+
+      body:JSON.stringify({
+        message:text
+      })
+
+    });
+
+    const data = await res.json();
+
+    document.getElementById("loading").remove();
+
+    chat.innerHTML += `
+      <div class="ai">
+        <div class="bubble">
+          ${data.reply}
+        </div>
+      </div>
+    `;
+
+    chat.scrollTop = chat.scrollHeight;
+
+  }catch(err){
+
+    document.getElementById("loading").remove();
+
+    chat.innerHTML += `
+      <div class="ai">
+        <div class="bubble">
+          Errore server
+        </div>
+      </div>
+    `;
+  }
 }
+
+document
+  .getElementById("input")
+  .addEventListener("keypress", function(e){
+
+    if(e.key === "Enter"){
+      send();
+    }
+
+});
+
 </script>
 
 </body>
