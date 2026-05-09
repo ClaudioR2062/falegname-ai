@@ -13,29 +13,63 @@ export default async function handler(req, res) {
 
     const { message } = req.body;
 
-    // legge tutti i file knowledge
     const knowledgePath = path.join(process.cwd(), "knowledge");
 
     const files = fs.readdirSync(knowledgePath);
 
-    let knowledge = "";
+    let selectedKnowledge = "";
 
+    // ricerca semplice per parole
     for (const file of files) {
 
-      const content = fs.readFileSync(
-        path.join(knowledgePath, file),
-        "utf8"
-      );
+      const filePath = path.join(knowledgePath, file);
 
-      knowledge += `\n\nFILE: ${file}\n${content}`;
+      const content = fs.readFileSync(filePath, "utf8");
+
+      const lowerContent = content.toLowerCase();
+      const lowerMessage = message.toLowerCase();
+
+      // divide domanda in parole
+      const words = lowerMessage.split(" ");
+
+      let relevance = 0;
+
+      for (const word of words) {
+
+        if (
+          word.length > 3 &&
+          lowerContent.includes(word)
+        ) {
+          relevance++;
+        }
+      }
+
+      // prende solo file rilevanti
+      if (relevance > 0) {
+
+        selectedKnowledge += `
+FILE: ${file}
+
+${content}
+
+-------------------
+`;
+      }
+    }
+
+    // fallback se niente trovato
+    if (!selectedKnowledge) {
+
+      selectedKnowledge =
+        "Nessuna conoscenza specifica trovata.";
     }
 
     const prompt = `
-Sei Claudio Riva, falegname esperto di laboratorio e cantiere.
+Sei Claudio Riva, falegname esperto reale.
 
-Rispondi usando SEMPRE le informazioni presenti nel knowledge base.
+Usa SEMPRE le informazioni presenti nel knowledge base.
 
-NON parlare come una AI generica.
+Non parlare come AI generica.
 
 Parla:
 - pratico
@@ -45,7 +79,7 @@ Parla:
 
 Se manca chiarezza fai UNA domanda.
 
-Se il problema è chiaro usa:
+Se il problema è chiaro rispondi con:
 
 PROBLEMA:
 PERCHÉ:
@@ -54,7 +88,7 @@ ATTENZIONE:
 SE SBAGLI:
 
 KNOWLEDGE BASE:
-${knowledge}
+${selectedKnowledge}
 
 DOMANDA:
 ${message}
@@ -83,8 +117,6 @@ ${message}
     );
 
     const data = await response.json();
-
-    console.log(data);
 
     return res.status(200).json({
       reply: data.choices[0].message.content
