@@ -1,0 +1,27 @@
+PROBLEMA:
+realizzare pannelli pantografati senza cnc
+
+SOLUZIONE:
+usare pantografo manuale come guida cnc
+
+COME:
+fissare una verga diritta al pannello con morsetti
+
+UTILIZZO:
+il piatto del pantografo scorre contro la verga
+
+GUIDA:
+tracciare linee a matita
+usare riferimenti centrali del pantografo
+
+ATTENZIONE:
+controllare velocità avanzamento
+
+SE TROPPO LENTO:
+brucia il legno
+
+SE TROPPO VELOCE:
+la fresata perde precisione
+
+CONSIGLIO:
+utilizzare cavalletti e piano perfettamente planare

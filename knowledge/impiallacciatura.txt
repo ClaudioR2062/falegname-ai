@@ -1,0 +1,62 @@
+PROBLEMA:
+impiallacciare pannelli più larghi della pressa
+
+SOLUZIONE:
+creare due pannelli impiallacciati:
+- uno a misura
+- uno maggiorato di circa 20mm
+
+COME:
+sul pannello a misura si crea una battuta posteriore
+sul pannello maggiorato si crea una controbattuta
+
+successivamente si uniscono con colla e si reincollano sopra un nuovo pannello di supporto
+
+RISULTATO:
+se eseguito correttamente il pannello sembra unico senza fughe visibili
+
+ATTENZIONE:
+le venature devono essere consecutive
+
+ERRORI:
+- tranciati non consecutivi
+- battuta e controbattuta deformate
+- mancanza di supporto posteriore
+
+CONTROLLO:
+mettere il pannello verticale in controluce e verificare che le curve delle venature si incontrino nello stesso punto
+
+SCELTA TRANCIATI:
+non ordinare a catalogo
+andare personalmente a scegliere biglia per biglia
+
+ROVERE:
+preferire tessitura rigata e uniforme
+
+NOCE:
+guardare soprattutto il colore bagnato
+
+SPESSORI:
+preferire 10/10 rispetto a 6/10
+
+MOTIVO:
+il 6/10 trasuda più facilmente
+si macchia
+rischia di andare in terrasanta durante la carteggiatura
+
+REGOLE:
+i fogli devono essere sempre pari
+
+PRESSATURA:
+80/90 gradi
+circa 15 minuti per mm
+
+COLLA:
+vinilica specifica per tranciati a bassa trasudazione
+
+STESURA:
+prima con rullo aperto
+poi uniformare con rullo chiuso senza pescaggio colla
+
+BILANCIATURA:
+sempre presente sul retro del pannello

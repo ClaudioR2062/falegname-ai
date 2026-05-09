@@ -1,0 +1,31 @@
+PROBLEMA:
+squadrare ante più grandi dell’area utile cnc
+
+SOLUZIONE:
+lavorare un lato per volta usando offset macchina
+
+COME:
+agganciare il profilo sul lato interno alle morse
+spostare lo zero macchina sul filo finito lavorazione
+
+SEQUENZA:
+prima teste
+poi lati lunghi
+
+MOTIVO:
+la lavorazione finale pulisce eventuali scheggiature della fresa
+
+SE NO:
+serve lavorazione multipla in toupie con tempi molto più lunghi
+
+CONTROLLO PIANARITÀ:
+usare comparatore magnetico fissato al mandrino
+
+ALTERNATIVA:
+laser da posa e metro a stecca
+
+ATTENZIONE:
+controllare planarità piano macchina per evitare problemi su pannelli sottili o lavorazioni profonde
+
+TOLLERANZE:
+centesimali accettabili nel legno

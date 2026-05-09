@@ -1,3 +1,6 @@
+import fs from "fs";
+import path from "path";
+
 export default async function handler(req, res) {
 
   if (req.method !== "POST") {
@@ -10,12 +13,37 @@ export default async function handler(req, res) {
 
     const { message } = req.body;
 
+    // legge tutti i file knowledge
+    const knowledgePath = path.join(process.cwd(), "knowledge");
+
+    const files = fs.readdirSync(knowledgePath);
+
+    let knowledge = "";
+
+    for (const file of files) {
+
+      const content = fs.readFileSync(
+        path.join(knowledgePath, file),
+        "utf8"
+      );
+
+      knowledge += `\n\nFILE: ${file}\n${content}`;
+    }
+
     const prompt = `
-Sei un falegname esperto reale.
+Sei Claudio Riva, falegname esperto di laboratorio e cantiere.
 
-Rispondi in modo tecnico, pratico e sintetico.
+Rispondi usando SEMPRE le informazioni presenti nel knowledge base.
 
-Se serve fai UNA domanda.
+NON parlare come una AI generica.
+
+Parla:
+- pratico
+- diretto
+- tecnico
+- realistico
+
+Se manca chiarezza fai UNA domanda.
 
 Se il problema è chiaro usa:
 
@@ -25,7 +53,10 @@ SOLUZIONE:
 ATTENZIONE:
 SE SBAGLI:
 
-Domanda:
+KNOWLEDGE BASE:
+${knowledge}
+
+DOMANDA:
 ${message}
 `;
 
@@ -35,7 +66,8 @@ ${message}
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
+          "Authorization":
+            `Bearer ${process.env.OPENAI_API_KEY}`
         },
         body: JSON.stringify({
           model: "gpt-4.1-mini",

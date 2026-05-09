@@ -1,0 +1,29 @@
+PROBLEMA:
+fissare mobili sospesi su gres e cassonetti porte scorrevoli
+
+SOLUZIONE:
+barre filettate e sistemi dado-contro dado
+
+COME:
+forare gres e cassonetto
+utilizzare barra filettata m6
+foro da 8mm per tolleranza
+
+IMPORTANTE:
+utilizzare rondelle
+
+MOTIVO:
+compensano differenze tra filetto e foro
+
+ANCORAGGI:
+- ancorante chimico su forato
+- fissaggio meccanico su cassonetto
+
+STRUTTURA:
+listoni strutturali fissati alla parete
+
+ATTENZIONE:
+prevedere sempre smontaggi futuri
+
+ERRORE:
+pensare solo all’estetica senza valutare struttura e manutenzione
