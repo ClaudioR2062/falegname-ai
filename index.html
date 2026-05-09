@@ -18,7 +18,7 @@
       margin:0;
       padding:0;
       background:#f2f2f2;
-      font-family:Arial, sans-serif;
+      font-family:Arial,sans-serif;
     }
 
     .container{
@@ -103,55 +103,116 @@
       font-style:italic;
     }
 
+    .counter{
+      margin-bottom:15px;
+      color:#666;
+      font-size:14px;
+    }
+
+    .blocked{
+      margin-top:20px;
+      padding:20px;
+      border-radius:10px;
+      background:#fff3cd;
+      border:1px solid #ffe69c;
+    }
+
+    a{
+      color:black;
+      font-weight:bold;
+    }
+
   </style>
 
 </head>
 
 <body>
 
-  <div class="container">
+<div class="container">
 
-    <h1>Falegname AI</h1>
+  <h1>Falegname AI</h1>
 
-    <div id="chat"></div>
+  <div class="counter">
+    Domande rimaste:
+    <span id="remaining"></span>
+  </div>
 
-    <div class="controls">
+  <div id="chat"></div>
 
-      <input
-        id="input"
-        placeholder="Scrivi il problema..."
-      />
+  <div class="controls">
 
-      <button onclick="send()">
-        Invia
-      </button>
+    <input
+      id="input"
+      placeholder="Scrivi il problema..."
+    />
 
-    </div>
+    <button onclick="send()">
+      Invia
+    </button>
 
   </div>
 
+  <div id="blocked"></div>
+
+</div>
+
 <script>
 
-const password = prompt("Password accesso");
+let limit = 10;
 
-if(password !== "claudio123"){
+let used = localStorage.getItem("usedQuestions");
 
-  document.body.innerHTML = `
-    <h1 style="text-align:center;margin-top:100px;">
-      Accesso negato
-    </h1>
-  `;
+if(!used){
+  used = 0;
+}
 
-  throw new Error("Accesso negato");
+used = parseInt(used);
+
+updateCounter();
+
+function updateCounter(){
+
+  document.getElementById("remaining")
+    .innerText = limit - used;
 }
 
 async function send(){
 
-  const input = document.getElementById("input");
+  if(used >= limit){
 
-  const chat = document.getElementById("chat");
+    document.getElementById("blocked").innerHTML = `
+      <div class="blocked">
 
-  const text = input.value.trim();
+        <h3>Limite raggiunto</h3>
+
+        <p>
+          Hai utilizzato le 10 domande gratuite.
+        </p>
+
+        <p>
+          Per continuare richiedi l'accesso:
+        </p>
+
+        <p>
+          <a href="mailto:claudioriva88@icloud.com">
+            claudioriva88@icloud.com
+          </a>
+        </p>
+
+      </div>
+    `;
+
+    return;
+  }
+
+  const input =
+    document.getElementById("input");
+
+  const chat =
+    document.getElementById("chat");
+
+  const text =
+    input.value.trim();
 
   if(!text) return;
 
@@ -173,27 +234,33 @@ async function send(){
     </div>
   `;
 
-  chat.scrollTop = chat.scrollHeight;
+  chat.scrollTop =
+    chat.scrollHeight;
 
   try{
 
-    const res = await fetch("/api/chat",{
+    const res = await fetch(
+      "/api/chat",
+      {
+        method:"POST",
 
-      method:"POST",
+        headers:{
+          "Content-Type":
+            "application/json"
+        },
 
-      headers:{
-        "Content-Type":"application/json"
-      },
+        body:JSON.stringify({
+          message:text
+        })
+      }
+    );
 
-      body:JSON.stringify({
-        message:text
-      })
+    const data =
+      await res.json();
 
-    });
-
-    const data = await res.json();
-
-    document.getElementById("loading").remove();
+    document
+      .getElementById("loading")
+      .remove();
 
     chat.innerHTML += `
       <div class="ai">
@@ -203,11 +270,23 @@ async function send(){
       </div>
     `;
 
-    chat.scrollTop = chat.scrollHeight;
+    used++;
+
+    localStorage.setItem(
+      "usedQuestions",
+      used
+    );
+
+    updateCounter();
+
+    chat.scrollTop =
+      chat.scrollHeight;
 
   }catch(err){
 
-    document.getElementById("loading").remove();
+    document
+      .getElementById("loading")
+      .remove();
 
     chat.innerHTML += `
       <div class="ai">
@@ -221,11 +300,13 @@ async function send(){
 
 document
   .getElementById("input")
-  .addEventListener("keypress", function(e){
+  .addEventListener(
+    "keypress",
+    function(e){
 
-    if(e.key === "Enter"){
-      send();
-    }
+      if(e.key === "Enter"){
+        send();
+      }
 
 });
 
