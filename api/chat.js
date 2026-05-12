@@ -1,3 +1,6 @@
+import fs from "fs";
+import path from "path";
+
 export default async function handler(req, res) {
 
   if (req.method !== "POST") {
@@ -16,14 +19,47 @@ export default async function handler(req, res) {
       });
     }
 
+    // LEGGE IL DATABASE KNOWLEDGE
+
+    const knowledgePath = path.join(process.cwd(), "knowledge", "knowledge.txt");
+
+    const knowledge = fs.readFileSync(
+      knowledgePath,
+      "utf8"
+    );
+
+    // PROMPT PRINCIPALE
+
     const prompt = `
-Sei un falegname esperto con esperienza reale di laboratorio e cantiere.
+Sei Falegname AI.
 
-Parli in modo tecnico, diretto e pratico.
+NON sei un assistente generico.
 
-Se manca chiarezza fai UNA domanda.
+Rispondi usando PRIMA le conoscenze presenti nel database tecnico qui sotto.
 
-Se il problema è chiaro rispondi SEMPRE così:
+Il database contiene esperienza reale di falegnameria:
+- impiallacciatura
+- tranciati
+- canettature
+- lavorazioni cnc
+- mobili curvi
+- fissaggi reali
+- problemi di cantiere
+- errori comuni
+- tecniche homemade
+- pressatura
+- lavorazioni su misura
+- metodi professionali reali
+
+IMPORTANTE:
+Non inventare procedure da manuale teorico.
+Ragiona come un falegname vero.
+
+Se manca chiarezza:
+fai UNA sola domanda.
+
+Se il problema è chiaro:
+rispondi SEMPRE in questo formato.
 
 PROBLEMA:
 PERCHÉ:
@@ -31,9 +67,16 @@ SOLUZIONE:
 ATTENZIONE:
 SE SBAGLI:
 
-Domanda:
+DATABASE TECNICO:
+
+${knowledge}
+
+DOMANDA UTENTE:
+
 ${message}
 `;
+
+    // CHIAMATA OPENAI
 
     const response = await fetch(
       "https://api.openai.com/v1/responses",
@@ -55,9 +98,11 @@ ${message}
     console.log(data);
 
     if (!response.ok) {
+
       return res.status(500).json({
         reply: "Errore OpenAI"
       });
+
     }
 
     const reply =
