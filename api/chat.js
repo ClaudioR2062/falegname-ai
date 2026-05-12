@@ -13,53 +13,77 @@ export default async function handler(req, res) {
 
     const { message } = req.body;
 
-    if (!message) {
-      return res.status(400).json({
-        reply: "Messaggio mancante"
-      });
+    // LEGGE TUTTI I FILE TXT
+
+    let knowledge = "";
+
+    try {
+
+      const knowledgeDir = path.join(
+        process.cwd(),
+        "knowledge"
+      );
+
+      const files =
+        fs.readdirSync(knowledgeDir);
+
+      for (const file of files) {
+
+        if (file.endsWith(".txt")) {
+
+          const content =
+            fs.readFileSync(
+              path.join(knowledgeDir, file),
+              "utf8"
+            );
+
+          knowledge += `
+
+FILE: ${file}
+
+${content}
+
+`;
+        }
+      }
+
+    } catch (err) {
+
+      console.log(
+        "Errore lettura knowledge:",
+        err
+      );
+
+      knowledge =
+        "Nessuna conoscenza disponibile.";
     }
 
-    // LEGGE IL DATABASE KNOWLEDGE
-
-    const knowledgePath = path.join(process.cwd(), "knowledge", "knowledge.txt");
-
-    const knowledge = fs.readFileSync(
-      knowledgePath,
-      "utf8"
-    );
-
-    // PROMPT PRINCIPALE
+    // PROMPT
 
     const prompt = `
 Sei Falegname AI.
 
 NON sei un assistente generico.
 
-Rispondi usando PRIMA le conoscenze presenti nel database tecnico qui sotto.
+Usa prima le informazioni presenti nel database tecnico.
 
-Il database contiene esperienza reale di falegnameria:
+Il database contiene esperienza reale:
 - impiallacciatura
+- cnc
+- curve
+- fissaggi
 - tranciati
-- canettature
-- lavorazioni cnc
-- mobili curvi
-- fissaggi reali
-- problemi di cantiere
-- errori comuni
-- tecniche homemade
-- pressatura
-- lavorazioni su misura
-- metodi professionali reali
+- errori reali
+- cantieristica
+- lavorazioni professionali
 
-IMPORTANTE:
-Non inventare procedure da manuale teorico.
-Ragiona come un falegname vero.
+Parla come un falegname vero.
 
 Se manca chiarezza:
-fai UNA sola domanda.
+fai UNA domanda.
 
 Se il problema è chiaro:
-rispondi SEMPRE in questo formato.
+rispondi così:
 
 PROBLEMA:
 PERCHÉ:
@@ -71,21 +95,26 @@ DATABASE TECNICO:
 
 ${knowledge}
 
-DOMANDA UTENTE:
+DOMANDA:
 
 ${message}
 `;
 
-    // CHIAMATA OPENAI
+    // OPENAI
 
     const response = await fetch(
       "https://api.openai.com/v1/responses",
       {
         method: "POST",
+
         headers: {
-          "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
-          "Content-Type": "application/json"
+          "Authorization":
+            `Bearer ${process.env.OPENAI_API_KEY}`,
+
+          "Content-Type":
+            "application/json"
         },
+
         body: JSON.stringify({
           model: "gpt-4.1-mini",
           input: prompt
@@ -93,21 +122,16 @@ ${message}
       }
     );
 
-    const data = await response.json();
+    const data =
+      await response.json();
 
     console.log(data);
 
-    if (!response.ok) {
-
-      return res.status(500).json({
-        reply: "Errore OpenAI"
-      });
-
-    }
-
     const reply =
-      data.output?.[0]?.content?.[0]?.text ||
-      "Nessuna risposta";
+      data.output?.[0]
+      ?.content?.[0]
+      ?.text
+      || "Nessuna risposta";
 
     return res.status(200).json({
       reply
