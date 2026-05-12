@@ -1,71 +1,29 @@
-import fs from "fs";
-import path from "path";
-
 export default async function handler(req, res) {
 
   if (req.method !== "POST") {
-    return res.status(405).end();
+    return res.status(405).json({
+      reply: "Metodo non consentito"
+    });
   }
 
   try {
 
     const { message } = req.body;
 
-    // DATABASE TECNICO
-
-    const dbPath = path.join(
-      process.cwd(),
-      "database"
-    );
-
-    const files =
-      fs.readdirSync(dbPath);
-
-    let knowledge = "";
-
-    for (const file of files) {
-
-      const content = fs.readFileSync(
-        path.join(dbPath, file),
-        "utf8"
-      );
-
-      knowledge += "\n\n" + content;
+    if (!message) {
+      return res.status(400).json({
+        reply: "Messaggio mancante"
+      });
     }
 
-    // LOG DOMANDE
-
-    const logPath = path.join(
-      process.cwd(),
-      "logs",
-      "questions.txt"
-    );
-
-    const logEntry = `
-
-========================
-DATA:
-${new Date().toISOString()}
-
-DOMANDA:
-${message}
-`;
-
-    fs.appendFileSync(
-      logPath,
-      logEntry
-    );
-
-    // PROMPT
-
     const prompt = `
-Sei Claudio, falegname esperto reale.
+Sei un falegname esperto con esperienza reale di laboratorio e cantiere.
 
-Rispondi usando esperienza pratica reale.
+Parli in modo tecnico, diretto e pratico.
 
 Se manca chiarezza fai UNA domanda.
 
-Se è chiaro rispondi così:
+Se il problema è chiaro rispondi SEMPRE così:
 
 PROBLEMA:
 PERCHÉ:
@@ -73,10 +31,7 @@ SOLUZIONE:
 ATTENZIONE:
 SE SBAGLI:
 
-CONOSCENZA TECNICA:
-${knowledge}
-
-DOMANDA:
+Domanda:
 ${message}
 `;
 
@@ -84,38 +39,43 @@ ${message}
       "https://api.openai.com/v1/responses",
       {
         method: "POST",
-
         headers: {
-          "Authorization":
-            "Bearer " +
-            process.env.OPENAI_API_KEY,
-
-          "Content-Type":
-            "application/json"
+          "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
+          "Content-Type": "application/json"
         },
-
         body: JSON.stringify({
-          model: "gpt-5.3",
+          model: "gpt-4.1-mini",
           input: prompt
         })
       }
     );
 
-    const data =
-      await response.json();
+    const data = await response.json();
 
-    res.status(200).json({
-      reply:
-        data.output[0]
-        .content[0]
-        .text
+    console.log(data);
+
+    if (!response.ok) {
+      return res.status(500).json({
+        reply: "Errore OpenAI"
+      });
+    }
+
+    const reply =
+      data.output?.[0]?.content?.[0]?.text ||
+      "Nessuna risposta";
+
+    return res.status(200).json({
+      reply
     });
 
-  } catch (err) {
+  } catch (error) {
 
-    res.status(500).json({
+    console.error(error);
+
+    return res.status(500).json({
       reply: "Errore server"
     });
 
   }
+
 }
