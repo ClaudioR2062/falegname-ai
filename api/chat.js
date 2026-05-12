@@ -13,8 +13,6 @@ export default async function handler(req, res) {
 
     const { message } = req.body;
 
-    // LEGGE TUTTI I FILE DELLA CARTELLA KNOWLEDGE
-
     let knowledge = "";
 
     try {
@@ -57,8 +55,6 @@ ${content}
       knowledge =
         "Nessuna conoscenza disponibile.";
     }
-
-    // PROMPT PRINCIPALE
 
     const prompt = `
 Sei Falegname AI.
@@ -144,8 +140,6 @@ DOMANDA UTENTE:
 ${message}
 `;
 
-    // CHIAMATA OPENAI
-
     const response = await fetch(
       "https://api.openai.com/v1/responses",
       {
@@ -153,7 +147,7 @@ ${message}
 
         headers: {
           "Authorization":
-            \`Bearer \${process.env.OPENAI_API_KEY}\`,
+            `Bearer ${process.env.OPENAI_API_KEY}`,
 
           "Content-Type":
             "application/json"
