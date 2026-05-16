@@ -80,8 +80,9 @@ ${message}
     const data = await response.json();
 
     const reply =
-      data.output?.[0]?.content?.[0]?.text ||
-      "Errore risposta AI";
+  data.output?.[0]?.content?.[0]?.text ||
+  data.output_text ||
+  "Errore risposta AI";
 
     res.status(200).json({
       reply
