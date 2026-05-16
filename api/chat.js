@@ -13,134 +13,191 @@ export default async function handler(req, res) {
 
     const { message } = req.body;
 
-    // LETTURA DATABASE KNOWLEDGE
+    const lowerMessage =
+      message.toLowerCase();
 
     let knowledge = "";
 
-    try {
+    // CARTELLA KNOWLEDGE
 
-      const knowledgeDir = path.join(
-        process.cwd(),
-        "knowledge"
-      );
+    const knowledgeDir = path.join(
+      process.cwd(),
+      "knowledge"
+    );
 
-      const files =
-        fs.readdirSync(knowledgeDir);
+    const files =
+      fs.readdirSync(knowledgeDir);
 
-      for (const file of files) {
+    // FILTRAGGIO FILE UTILI
 
-        if (file.endsWith(".txt")) {
+    for (const file of files) {
 
-          const content =
-            fs.readFileSync(
-              path.join(knowledgeDir, file),
-              "utf8"
-            );
+      if (!file.endsWith(".txt")) {
+        continue;
+      }
 
-          knowledge += `
+      const lowerFile =
+        file.toLowerCase();
+
+      let useFile = false;
+
+      // IMPiallacciatura / tranciati
+
+      if (
+        lowerMessage.includes("tranciato") ||
+        lowerMessage.includes("impiallacci") ||
+        lowerMessage.includes("vena") ||
+        lowerMessage.includes("rovere") ||
+        lowerMessage.includes("noce") ||
+        lowerMessage.includes("pressa") ||
+        lowerMessage.includes("giunta")
+      ) {
+
+        if (
+          lowerFile.includes("impiallacci") ||
+          lowerFile.includes("tranciati")
+        ) {
+          useFile = true;
+        }
+      }
+
+      // CNC
+
+      if (
+        lowerMessage.includes("cnc") ||
+        lowerMessage.includes("pantografo") ||
+        lowerMessage.includes("fresa") ||
+        lowerMessage.includes("offset")
+      ) {
+
+        if (
+          lowerFile.includes("cnc")
+        ) {
+          useFile = true;
+        }
+      }
+
+      // CURVE
+
+      if (
+        lowerMessage.includes("curva") ||
+        lowerMessage.includes("curvo") ||
+        lowerMessage.includes("canett") ||
+        lowerMessage.includes("raggio")
+      ) {
+
+        if (
+          lowerFile.includes("curve")
+        ) {
+          useFile = true;
+        }
+      }
+
+      // FISSAGGI
+
+      if (
+        lowerMessage.includes("fissaggio") ||
+        lowerMessage.includes("barra") ||
+        lowerMessage.includes("chimico") ||
+        lowerMessage.includes("muro")
+      ) {
+
+        if (
+          lowerFile.includes("fissaggi")
+        ) {
+          useFile = true;
+        }
+      }
+
+      // ERRORI
+
+      if (
+        lowerMessage.includes("errore") ||
+        lowerMessage.includes("problema")
+      ) {
+
+        if (
+          lowerFile.includes("errori")
+        ) {
+          useFile = true;
+        }
+      }
+
+      // SE NESSUN FILE MATCHA:
+      // USA TUTTO COME FALLBACK
+
+      if (!knowledge.length) {
+        useFile = true;
+      }
+
+      // LETTURA FILE
+
+      if (useFile) {
+
+        const content =
+          fs.readFileSync(
+            path.join(knowledgeDir, file),
+            "utf8"
+          );
+
+        knowledge += `
 
 FILE: ${file}
 
 ${content}
 
 `;
-        }
       }
-
-    } catch (err) {
-
-      console.log(
-        "Errore lettura knowledge:",
-        err
-      );
-
-      knowledge =
-        "Nessuna conoscenza disponibile.";
     }
 
-    // PROMPT PRINCIPALE
+    // PROMPT
 
     const prompt = `
 Sei un falegname professionista reale.
 
-Non sei un assistente AI.
-Non sei un insegnante.
-Non sei un consulente motivazionale.
-
 Parli come uno che lavora davvero in falegnameria e in cantiere.
 
-PRIMA DI RISPONDERE:
-
-valuta se hai davvero abbastanza dati tecnici.
-
-Se mancano dati IMPORTANTI:
-fai domande tecniche brevi e mirate.
-
-NON più di 2 domande.
-
-NON fare interrogatori.
-
-NON chiedere dettagli inutili.
-
-Se hai abbastanza dati:
-rispondi subito.
+NON parlare come:
+- assistente AI
+- insegnante
+- consulente
+- chatbot
+- social media
 
 REGOLE:
 
 - usa tono tecnico e concreto
-- scrivi come si parlerebbe realmente in falegnameria
 - usa frasi corte
-- evita elenchi lunghi inutili
 - evita spiegazioni scolastiche
-- evita riassunti finali
 - evita storytelling
-- evita tono social
-- evita tono da chatbot
-- evita complimenti inutili
+- evita tono motivazionale
 - evita introduzioni inutili
 - evita teoria generica
-- non ripetere concetti già detti
+- non ripetere concetti
 
-- se una soluzione è sbagliata dillo chiaramente
-- se una cosa non vale la pena farla dillo
-- privilegia esperienza pratica rispetto alla teoria
-- se una soluzione è rischiosa spiegalo direttamente
+PRIMA DI RISPONDERE:
 
-Quando rispondi:
-ragiona come uno che deve costruire davvero il pezzo.
+valuta se hai davvero abbastanza dati.
+
+Se mancano dati importanti:
+fai massimo 2 domande tecniche.
+
+Se hai già abbastanza dati:
+rispondi subito.
+
+Ragiona come uno che deve realmente costruire il pezzo.
 
 Considera:
-- fattibilità
-- stabilità
 - lavorazione
 - montaggio
-- tolleranze
+- stabilità
 - deformazioni
 - umidità
 - utensili
+- tolleranze
 - errori reali
 
 Usa il database tecnico come priorità assoluta.
-
-ESEMPI DI TONO CORRETTO:
-
-"Se i fogli non sono consecutivi la giunta si vedrà."
-
-"Con 6/10 rischi di andare in terrasanta."
-
-"Quella sezione è troppo tirata, non resta materiale."
-
-"Così in cantiere ti si apre."
-
-"Se il falsotelaio è storto il coprifilo deve avere margine."
-
-"Controllalo in piedi in controluce."
-
-"Se devi compensare 20mm meglio tamponare."
-
-NON scrivere come un manuale.
-
-Scrivi come uno che il lavoro lo fa davvero.
 
 DATABASE TECNICO:
 
@@ -151,7 +208,7 @@ DOMANDA UTENTE:
 ${message}
 `;
 
-    // CHIAMATA OPENAI
+    // OPENAI
 
     const response = await fetch(
       "https://api.openai.com/v1/responses",
