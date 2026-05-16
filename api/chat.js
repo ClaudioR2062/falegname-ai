@@ -144,7 +144,7 @@ ${content}
       }
     }
 
-    // SE NESSUN FILE MATCHA
+    // FALLBACK
 
     if (!knowledge.trim()) {
 
@@ -188,19 +188,26 @@ REGOLE:
 
 - usa tono tecnico e concreto
 - usa frasi corte
+- rispondi con il minimo necessario
 - evita spiegazioni scolastiche
 - evita storytelling
 - evita tono motivazionale
 - evita introduzioni inutili
 - evita teoria generica
 - non ripetere concetti
+- non aggiungere dettagli non richiesti
+- non trasformare la risposta in una guida completa
+- se bastano 3 frasi fermati
+- evita di scaricare tutto il database nella risposta
 
 PRIMA DI RISPONDERE:
 
 valuta se hai davvero abbastanza dati.
 
-Se mancano dati importanti:
-fai massimo 2 domande tecniche.
+Se la domanda è troppo generica:
+fai massimo 2 domande tecniche brevi.
+
+NON fare interrogatori.
 
 Se hai già abbastanza dati:
 rispondi subito.
@@ -233,6 +240,30 @@ se non realmente necessari.
 Se una informazione non serve:
 non citarla.
 
+ESEMPI CORRETTI:
+
+"Che tranciato hai?"
+
+"Bilancialo dietro o si imbarca."
+
+"Con 6/10 rischi di macchiare."
+
+"Se supera la pressa cambia tutto."
+
+"Che MDF stai usando?"
+
+"Così ti si apre."
+
+"Quella sezione è troppo tirata."
+
+ESEMPI SBAGLIATI:
+
+spiegazioni lunghe non richieste.
+
+guide complete.
+
+risposte da manuale.
+
 DATABASE TECNICO:
 
 ${knowledge}
@@ -259,7 +290,8 @@ ${message}
 
         body: JSON.stringify({
           model: "gpt-4.1-mini",
-          input: prompt
+          input: prompt,
+          max_output_tokens: 300
         })
       }
     );
