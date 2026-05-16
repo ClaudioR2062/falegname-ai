@@ -4,72 +4,137 @@ import path from "path";
 export default async function handler(req, res) {
 
   if (req.method !== "POST") {
-    return res.status(405).end();
+    return res.status(405).json({
+      reply: "Metodo non consentito"
+    });
   }
 
   try {
 
     const { message } = req.body;
 
-    const knowledgePath = path.join(process.cwd(), "knowledge");
+    // LETTURA DATABASE KNOWLEDGE
 
     let knowledge = "";
 
-    if (fs.existsSync(knowledgePath)) {
+    try {
 
-      const files = fs.readdirSync(knowledgePath);
+      const knowledgeDir = path.join(
+        process.cwd(),
+        "knowledge"
+      );
+
+      const files =
+        fs.readdirSync(knowledgeDir);
 
       for (const file of files) {
 
-        const content = fs.readFileSync(
-          path.join(knowledgePath, file),
-          "utf8"
-        );
+        if (file.endsWith(".txt")) {
 
-        knowledge += "\n" + content;
+          const content =
+            fs.readFileSync(
+              path.join(knowledgeDir, file),
+              "utf8"
+            );
+
+          knowledge += `
+
+FILE: ${file}
+
+${content}
+
+`;
+        }
       }
+
+    } catch (err) {
+
+      console.log(
+        "Errore lettura knowledge:",
+        err
+      );
+
+      knowledge =
+        "Nessuna conoscenza disponibile.";
     }
 
+    // PROMPT PRINCIPALE
+
     const prompt = `
-Sei un falegname professionista esperto di laboratorio, cantiere, CNC, impiallacciatura, montaggio e lavorazioni reali.
+Sei un falegname professionista reale.
 
-Usa SEMPRE un tono tecnico, diretto e pratico.
+Non sei un assistente AI.
+Non sei un insegnante.
+Non sei un consulente motivazionale.
 
-NON essere melodrammatico.
+Ti comporti come uno che deve realmente costruire il pezzo.
 
-NON fare complimenti inutili.
+PRIMA DI RISPONDERE:
 
-Se la domanda è vaga:
-fai MASSIMO 2 domande precise e tecniche.
+valuta se hai davvero abbastanza dati tecnici.
 
-Se hai già abbastanza informazioni:
-rispondi subito senza continuare a interrogare.
+Se mancano dati IMPORTANTI:
+fai domande tecniche brevi e mirate.
+
+NON più di 2 domande.
+
+NON fare interrogatori.
+
+NON chiedere dettagli inutili.
+
+Se hai abbastanza dati:
+rispondi subito.
+
+REGOLE:
+
+- usa tono tecnico e concreto
+- evita introduzioni inutili
+- evita spiegazioni teoriche lunghe
+- evita tono melodrammatico
+- evita storytelling
+- evita complimenti
+- evita frasi da chatbot
 
 Quando rispondi:
+ragiona come in falegnameria reale.
 
-- vai dritto al punto
-- spiega problemi reali
-- evita teoria inutile
-- dai consigli concreti
-- considera errori pratici di falegnameria
+Considera:
+- fattibilità
+- stabilità
+- lavorazione
+- montaggio
+- tolleranze
+- deformazioni
+- umidità
+- utensili
+- errori reali
 
-Conoscenza tecnica:
+Usa il database tecnico come priorità assoluta.
+
+DATABASE TECNICO:
 
 ${knowledge}
 
-Domanda utente:
+DOMANDA UTENTE:
+
 ${message}
 `;
+
+    // CHIAMATA OPENAI
 
     const response = await fetch(
       "https://api.openai.com/v1/responses",
       {
         method: "POST",
+
         headers: {
           "Authorization":
-            "Bearer " + process.env.OPENAI_API_KEY,
-          "Content-Type": "application/json"
+            `Bearer ${process.env.OPENAI_API_KEY}`,
+
+          "Content-Type":
+            "application/json"
         },
+
         body: JSON.stringify({
           model: "gpt-4.1-mini",
           input: prompt
@@ -77,21 +142,28 @@ ${message}
       }
     );
 
-    const data = await response.json();
+    const data =
+      await response.json();
+
+    console.log(data);
 
     const reply =
-  data.output?.[0]?.content?.[0]?.text ||
-  data.output_text ||
-  "Errore risposta AI";
+      data.output?.[0]?.content?.[0]?.text ||
+      data.output_text ||
+      "Errore risposta AI";
 
-    res.status(200).json({
+    return res.status(200).json({
       reply
     });
 
-  } catch (err) {
+  } catch (error) {
 
-    res.status(500).json({
+    console.error(error);
+
+    return res.status(500).json({
       reply: "Errore server"
     });
+
   }
+
 }
