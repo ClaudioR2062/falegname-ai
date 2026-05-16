@@ -2,127 +2,125 @@
 <html lang="it">
 
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <meta charset="UTF-8" />
+<title>Falegname AI</title>
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  />
+<style>
 
-  <title>Falegname AI</title>
+body{
+  margin:0;
+  padding:0;
+  background:#111;
+  font-family:Arial,sans-serif;
+  color:white;
+}
 
-  <style>
+.container{
+  max-width:900px;
+  margin:auto;
+  padding:20px;
+}
 
-    body{
-      margin:0;
-      padding:0;
-      background:#f2f2f2;
-      font-family:Arial,sans-serif;
-    }
+h1{
+  font-size:48px;
+  margin-bottom:10px;
+}
 
-    .container{
-      max-width:900px;
-      margin:40px auto;
-      background:white;
-      border-radius:12px;
-      padding:20px;
-      box-shadow:0 0 20px rgba(0,0,0,0.1);
-    }
+#counter{
+  color:#bdbdbd;
+  margin-bottom:20px;
+  font-size:22px;
+}
 
-    h1{
-      margin-top:0;
-    }
+#chat{
+  background:#1b1b1b;
+  border:1px solid #2a2a2a;
+  border-radius:20px;
+  padding:20px;
+  height:65vh;
+  overflow-y:auto;
+}
 
-    #chat{
-      height:500px;
-      overflow-y:auto;
-      border:1px solid #ddd;
-      border-radius:10px;
-      padding:15px;
-      background:#fafafa;
-      margin-bottom:15px;
-    }
+.message{
+  display:flex;
+  margin-bottom:18px;
+}
 
-    .user{
-      margin-bottom:15px;
-      text-align:right;
-    }
+.user{
+  justify-content:flex-end;
+}
 
-    .user .bubble{
-      display:inline-block;
-      background:#d9ecff;
-      padding:10px;
-      border-radius:10px;
-      max-width:80%;
-    }
+.ai{
+  justify-content:flex-start;
+}
 
-    .ai{
-      margin-bottom:15px;
-      text-align:left;
-    }
+.bubble{
+  max-width:75%;
+  padding:16px;
+  border-radius:20px;
+  line-height:1.5;
+  white-space:pre-wrap;
+  font-size:17px;
+}
 
-    .ai .bubble{
-      display:inline-block;
-      background:#efefef;
-      padding:12px;
-      border-radius:10px;
-      max-width:80%;
-      white-space:pre-wrap;
-    }
+.user .bubble{
+  background:#2563eb;
+  color:white;
+  border-bottom-right-radius:5px;
+}
 
-    .controls{
-      display:flex;
-      gap:10px;
-    }
+.ai .bubble{
+  background:#2b2b2b;
+  color:white;
+  border-bottom-left-radius:5px;
+}
 
-    input{
-      flex:1;
-      padding:14px;
-      border-radius:10px;
-      border:1px solid #ccc;
-      font-size:16px;
-    }
+.bottom{
+  display:flex;
+  gap:10px;
+  margin-top:20px;
+}
 
-    button{
-      padding:14px 20px;
-      border:none;
-      border-radius:10px;
-      cursor:pointer;
-      background:black;
-      color:white;
-      font-size:16px;
-    }
+input{
+  flex:1;
+  padding:18px;
+  border-radius:16px;
+  border:none;
+  background:#1f1f1f;
+  color:white;
+  font-size:17px;
+  outline:none;
+}
 
-    button:hover{
-      opacity:0.9;
-    }
+button{
+  padding:18px 26px;
+  border:none;
+  border-radius:16px;
+  background:white;
+  color:black;
+  font-size:17px;
+  font-weight:bold;
+  cursor:pointer;
+}
 
-    .loading{
-      opacity:0.6;
-      font-style:italic;
-    }
+.feedback{
+  text-align:center;
+  margin-top:25px;
+}
 
-    .counter{
-      margin-bottom:15px;
-      color:#666;
-      font-size:14px;
-    }
+.feedback a{
+  display:inline-block;
+  padding:14px 22px;
+  background:#2563eb;
+  color:white;
+  border-radius:14px;
+  text-decoration:none;
+  font-weight:bold;
+}
 
-    .blocked{
-      margin-top:20px;
-      padding:20px;
-      border-radius:10px;
-      background:#fff3cd;
-      border:1px solid #ffe69c;
-    }
-
-    a{
-      color:black;
-      font-weight:bold;
-    }
-
-  </style>
+</style>
 
 </head>
 
@@ -130,94 +128,68 @@
 
 <div class="container">
 
-  <h1>Falegname AI</h1>
+<h1>Falegname AI</h1>
 
-  <div class="counter">
-    Domande rimaste:
-    <span id="remaining"></span>
-  </div>
+<div id="counter">
+Domande rimaste: <span id="remaining">10</span>
+</div>
 
-  <div id="chat"></div>
+<div id="chat"></div>
 
-  <div class="controls">
+<div class="bottom">
 
-    <input
-      id="input"
-      placeholder="Scrivi il problema..."
-    />
+<input
+  id="input"
+  placeholder="Scrivi il problema..."
+/>
 
-    <button onclick="send()">
-      Invia
-    </button>
+<button onclick="send()">
+Invia
+</button>
 
-  </div>
+</div>
 
-  <div id="blocked"></div>
+<div class="feedback">
+
+<a href="mailto:claudioriva88@icloud.com?subject=Feedback Falegname AI">
+Lascia un feedback
+</a>
+
+</div>
 
 </div>
 
 <script>
 
-let limit = 10;
+let remaining = localStorage.getItem("remaining");
 
-let used = localStorage.getItem("usedQuestions");
-
-if(!used){
-  used = 0;
+if(remaining === null){
+  remaining = 10;
+  localStorage.setItem("remaining", remaining);
 }
 
-used = parseInt(used);
-
-updateCounter();
-
-function updateCounter(){
-
-  document.getElementById("remaining")
-    .innerText = limit - used;
-}
+document.getElementById("remaining").innerText = remaining;
 
 async function send(){
 
-  if(used >= limit){
+  const input = document.getElementById("input");
+  const chat = document.getElementById("chat");
 
-    document.getElementById("blocked").innerHTML = `
-      <div class="blocked">
+  const text = input.value.trim();
 
-        <h3>Limite raggiunto</h3>
+  if(!text) return;
 
-        <p>
-          Hai utilizzato le 10 domande gratuite.
-        </p>
+  if(remaining <= 0){
 
-        <p>
-          Per continuare richiedi l'accesso:
-        </p>
-
-        <p>
-          <a href="mailto:claudioriva88@icloud.com">
-            claudioriva88@icloud.com
-          </a>
-        </p>
-
-      </div>
-    `;
+    alert(
+      "Hai terminato le domande gratuite. Scrivi a claudioriva88@icloud.com"
+    );
 
     return;
   }
 
-  const input =
-    document.getElementById("input");
-
-  const chat =
-    document.getElementById("chat");
-
-  const text =
-    input.value.trim();
-
-  if(!text) return;
-
   chat.innerHTML += `
-    <div class="user">
+    <div class="message user">
       <div class="bubble">
         ${text}
       </div>
@@ -226,70 +198,42 @@ async function send(){
 
   input.value = "";
 
-  chat.innerHTML += `
-    <div class="ai loading" id="loading">
-      <div class="bubble">
-        Sto ragionando...
-      </div>
-    </div>
-  `;
-
-  chat.scrollTop =
-    chat.scrollHeight;
+  chat.scrollTop = chat.scrollHeight;
 
   try{
 
-    const res = await fetch(
-      "/api/chat",
-      {
-        method:"POST",
+    const res = await fetch("/api/chat",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        message:text
+      })
+    });
 
-        headers:{
-          "Content-Type":
-            "application/json"
-        },
-
-        body:JSON.stringify({
-          message:text
-        })
-      }
-    );
-
-    const data =
-      await res.json();
-
-    document
-      .getElementById("loading")
-      .remove();
+    const data = await res.json();
 
     chat.innerHTML += `
-      <div class="ai">
+      <div class="message ai">
         <div class="bubble">
           ${data.reply}
         </div>
       </div>
     `;
 
-    used++;
+    remaining--;
 
-    localStorage.setItem(
-      "usedQuestions",
-      used
-    );
+    localStorage.setItem("remaining", remaining);
 
-    updateCounter();
+    document.getElementById("remaining").innerText = remaining;
 
-    chat.scrollTop =
-      chat.scrollHeight;
+    chat.scrollTop = chat.scrollHeight;
 
-  }catch(err){
-
-    document
-      .getElementById("loading")
-      .remove();
+  } catch(err){
 
     chat.innerHTML += `
-      <div class="ai">
+      <div class="message ai">
         <div class="bubble">
           Errore server
         </div>
@@ -297,18 +241,6 @@ async function send(){
     `;
   }
 }
-
-document
-  .getElementById("input")
-  .addEventListener(
-    "keypress",
-    function(e){
-
-      if(e.key === "Enter"){
-        send();
-      }
-
-});
 
 </script>
 
