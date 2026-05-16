@@ -28,7 +28,7 @@ export default async function handler(req, res) {
     const files =
       fs.readdirSync(knowledgeDir);
 
-    // FILTRAGGIO FILE UTILI
+    // FILTRAGGIO FILE
 
     for (const file of files) {
 
@@ -50,7 +50,8 @@ export default async function handler(req, res) {
         lowerMessage.includes("rovere") ||
         lowerMessage.includes("noce") ||
         lowerMessage.includes("pressa") ||
-        lowerMessage.includes("giunta")
+        lowerMessage.includes("giunta") ||
+        lowerMessage.includes("mdf")
       ) {
 
         if (
@@ -123,16 +124,35 @@ export default async function handler(req, res) {
         }
       }
 
-      // SE NESSUN FILE MATCHA:
-      // USA TUTTO COME FALLBACK
-
-      if (!knowledge.length) {
-        useFile = true;
-      }
-
       // LETTURA FILE
 
       if (useFile) {
+
+        const content =
+          fs.readFileSync(
+            path.join(knowledgeDir, file),
+            "utf8"
+          );
+
+        knowledge += `
+
+FILE: ${file}
+
+${content}
+
+`;
+      }
+    }
+
+    // SE NESSUN FILE MATCHA
+
+    if (!knowledge.trim()) {
+
+      for (const file of files) {
+
+        if (!file.endsWith(".txt")) {
+          continue;
+        }
 
         const content =
           fs.readFileSync(
@@ -198,6 +218,20 @@ Considera:
 - errori reali
 
 Usa il database tecnico come priorità assoluta.
+
+Usa SOLO le informazioni pertinenti alla domanda.
+
+NON mischiare:
+- CNC
+- impiallacciatura
+- fissaggi
+- curve
+- cantieristica
+
+se non realmente necessari.
+
+Se una informazione non serve:
+non citarla.
 
 DATABASE TECNICO:
 
